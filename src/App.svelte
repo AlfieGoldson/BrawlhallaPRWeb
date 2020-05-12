@@ -1,5 +1,6 @@
 <script>
   import PlayerItem from "./components/PlayerItem.svelte";
+  import Sidebar from "./components/Sidebar.svelte";
 
   import NA1v1 from "./pr/NA 1v1 - Spring 2020.json";
   import NA2v2 from "./pr/NA 2v2 - Spring 2020.json";
@@ -16,7 +17,7 @@
   import AUS1v1 from "./pr/AUS 1v1 - Spring 2020.json";
   import AUS2v2 from "./pr/AUS 2v2 - Spring 2020.json";
 
-  let region = "EU";
+  let region = "NA";
   let bracket = "1v1";
   let search = "";
 
@@ -47,12 +48,16 @@
 <style>
   main {
     text-align: center;
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    overflow: hidden;
+    height: 100vh;
+  }
+  #prTable {
+    overflow-y: scroll;
   }
   input {
     flex: 1;
-  }
-  table {
-    border-spacing: 0;
   }
   .inputs {
     display: flex;
@@ -60,39 +65,70 @@
     justify-content: center;
     max-width: 1200px;
   }
+  #prTable header {
+    position: sticky;
+    top: 0;
+    background-color: #0e3e5b;
+    color: white;
+    text-transform: uppercase;
+    padding: 1.25rem 0;
+    z-index: 10;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+  }
+  .prRow {
+    display: grid;
+    grid-template-columns: 6rem 1fr repeat(5, 5rem) 8rem;
+    align-items: center;
+    padding: 0.25rem 0;
+  }
+  .prContent .prRow {
+    border-bottom: 1px solid rgba(14, 62, 91, 0.12);
+    color: white;
+  }
+  .prContent .prRow:nth-of-type(2n) {
+    background-color: #0e3e5b;
+  }
+  .prContent .prRow:nth-of-type(2n + 1) {
+    background-color: #0b283f;
+  }
+  .prContent .prRow:hover {
+    background-color: #dd7917;
+  }
 </style>
 
 <main>
-  <h1>{region} {bracket} PR</h1>
-  <div class="inputs">
-    <input bind:value={search} />
-    <select name="region" id="region" bind:value={region}>
-      <option value="NA">NA</option>
-      <option value="EU">EU</option>
-      <option value="SA">SA</option>
-      <option value="SEA">SEA</option>
-      <option value="AUS">AUS</option>
-    </select>
-    <select name="bracket" id="bracket" bind:value={bracket}>
-      <option value="1v1">1v1</option>
-      <option value="2v2">2v2</option>
-    </select>
+  <Sidebar
+    {search}
+    {bracket}
+    {region}
+    on:search={e => {
+      search = e.detail;
+    }}
+    on:changeRegion={e => {
+      region = e.detail;
+    }}
+    on:changeBracket={e => {
+      bracket = e.detail;
+    }} />
+  <div id="prTable">
+    <header class="prRow">
+      <p>Rank</p>
+      <p>Name</p>
+      <p>Top 1</p>
+      <p>Top 2</p>
+      <p>Top 3</p>
+      <p>Top 8</p>
+      <p>Top 32</p>
+      <p>Points</p>
+    </header>
+    <div class="prContent">
+      {#each prs[region][bracket] as player}
+        {#if player.name.toLowerCase().startsWith(search.toLowerCase())}
+          <div class="prRow">
+            <PlayerItem {player} />
+          </div>
+        {/if}
+      {/each}
+    </div>
   </div>
-  <table style="width:100%">
-    <tr>
-      <th>Rank</th>
-      <th style="text-align: left">Name</th>
-      <th>Top 1</th>
-      <th>Top 2</th>
-      <th>Top 3</th>
-      <th>Top 8</th>
-      <th>Top 32</th>
-      <th>Points</th>
-    </tr>
-    {#each prs[region][bracket] as player}
-      {#if player.name.toLowerCase().startsWith(search.toLowerCase())}
-        <PlayerItem {player} />
-      {/if}
-    {/each}
-  </table>
 </main>
