@@ -49,28 +49,35 @@
     text-align: center;
   }
   input {
-    width: 100%;
-    max-width: 1200px;
+    flex: 1;
   }
   table {
     border-spacing: 0;
+  }
+  .inputs {
+    display: flex;
+    margin: 1rem auto;
+    justify-content: center;
+    max-width: 1200px;
   }
 </style>
 
 <main>
   <h1>{region} {bracket} PR</h1>
-  <input bind:value={search} />
-  <select name="region" id="region" bind:value={region}>
-    <option value="NA">NA</option>
-    <option value="EU">EU</option>
-    <option value="SA">SA</option>
-    <option value="SEA">SEA</option>
-    <option value="AUS">AUS</option>
-  </select>
-  <select name="bracket" id="bracket" bind:value={bracket}>
-    <option value="1v1">1v1</option>
-    <option value="2v2">2v2</option>
-  </select>
+  <div class="inputs">
+    <input bind:value={search} />
+    <select name="region" id="region" bind:value={region}>
+      <option value="NA">NA</option>
+      <option value="EU">EU</option>
+      <option value="SA">SA</option>
+      <option value="SEA">SEA</option>
+      <option value="AUS">AUS</option>
+    </select>
+    <select name="bracket" id="bracket" bind:value={bracket}>
+      <option value="1v1">1v1</option>
+      <option value="2v2">2v2</option>
+    </select>
+  </div>
   <table style="width:100%">
     <tr>
       <th>Rank</th>
