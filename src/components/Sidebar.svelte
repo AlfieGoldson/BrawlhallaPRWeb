@@ -48,9 +48,14 @@
     background-color: #0e3e5b;
     color: white;
   }
+  #logo {
+    width: 100%;
+    height: auto;
+  }
 </style>
 
 <div class="sidebar">
+  <img src="imgs/Year5Graphic_WEB.png" alt="logo" id="logo" />
   <h1>{region} {bracket} PR</h1>
   <label for="search" class="sectionTitle">Search:</label>
   <input id="search" bind:value={search} />
