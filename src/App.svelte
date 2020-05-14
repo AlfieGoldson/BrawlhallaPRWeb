@@ -20,6 +20,7 @@
   let region = "NA";
   let bracket = "1v1";
   let search = "";
+  let sort = "totalPoints";
 
   const prs = {
     NA: {
@@ -43,15 +44,27 @@
       "2v2": AUS2v2
     }
   };
+
+  const sortFn = (property, asc = true) => (a, b) => {
+    return (a[property] - b[property]) * (asc ? -1 : 1);
+  };
 </script>
 
 <style>
   main {
     text-align: center;
     display: grid;
-    grid-template-columns: 320px 1fr;
+    grid-template-columns: 1fr;
     overflow: hidden;
     height: 100vh;
+  }
+  .sidebar-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: none;
   }
   #prTable {
     overflow-y: scroll;
@@ -59,27 +72,32 @@
   input {
     flex: 1;
   }
-  .inputs {
-    display: flex;
-    margin: 1rem auto;
-    justify-content: center;
-    max-width: 1200px;
-  }
   #prTable header {
     position: sticky;
     top: 0;
     background-color: #0e3e5b;
     color: white;
     text-transform: uppercase;
-    padding: 1.25rem 0;
     z-index: 10;
     box-shadow: 0 0 8px rgba(0, 0, 0, 0.12);
+    padding: 0.75rem 0;
   }
   .prRow {
     display: grid;
-    grid-template-columns: 6rem 1fr repeat(5, 5rem) 8rem;
+    grid-template-columns: 6rem 1fr repeat(3, 5rem) 8rem;
     align-items: center;
     padding: 0.25rem 0;
+  }
+
+  .prRow label {
+    cursor: pointer;
+    padding: 0.5rem 0;
+  }
+  .prRow label:hover {
+    background-color: #0b283f;
+  }
+  .prRow label.active {
+    background-color: #dd7917;
   }
   .prContent .prRow {
     border-bottom: 1px solid rgba(14, 62, 91, 0.12);
@@ -94,38 +112,78 @@
   .prContent .prRow:hover {
     background-color: #dd7917;
   }
+  input[type="radio"] {
+    display: none;
+  }
+  .t2,
+  .t3 {
+    display: none;
+  }
+  @media only screen and (min-width: 1200px) {
+    main {
+      grid-template-columns: 320px 1fr;
+    }
+    .sidebar-container {
+      position: relative;
+      display: block;
+    }
+    .prRow {
+      grid-template-columns: 6rem 1fr repeat(5, 5rem) 8rem;
+    }
+    .t2,
+    .t3 {
+      display: block;
+    }
+  }
 </style>
 
 <main>
-  <Sidebar
-    {search}
-    {bracket}
-    {region}
-    on:search={e => {
-      search = e.detail;
-    }}
-    on:changeRegion={e => {
-      region = e.detail;
-    }}
-    on:changeBracket={e => {
-      bracket = e.detail;
-    }} />
+  <div class="sidebar-container">
+    <Sidebar
+      {search}
+      {bracket}
+      {region}
+      on:search={e => {
+        search = e.detail;
+      }}
+      on:changeRegion={e => {
+        region = e.detail;
+      }}
+      on:changeBracket={e => {
+        bracket = e.detail;
+      }} />
+  </div>
   <div id="prTable">
     <header class="prRow">
       <p>Rank</p>
-      <p>Name</p>
-      <p>Top 1</p>
-      <p>Top 2</p>
-      <p>Top 3</p>
-      <p>Top 8</p>
-      <p>Top 32</p>
-      <p>Points</p>
+      <p style="text-align: left;">Name</p>
+      <input type="radio" bind:group={sort} value="t1" id="sort_t1" />
+      <label for="sort_t1" class="t1" class:active={sort === 't1'}>Top 1</label>
+      <input type="radio" bind:group={sort} value="t2" id="sort_t2" />
+      <label for="sort_t2" class="t2" class:active={sort === 't2'}>Top 2</label>
+      <input type="radio" bind:group={sort} value="t3" id="sort_t3" />
+      <label for="sort_t3" class="t3" class:active={sort === 't3'}>Top 3</label>
+      <input type="radio" bind:group={sort} value="t8" id="sort_t8" />
+      <label for="sort_t8" class="t8" class:active={sort === 't8'}>Top 8</label>
+      <input type="radio" bind:group={sort} value="t32" id="sort_t32" />
+      <label for="sort_t32" class="t32" class:active={sort === 't32'}>
+        Top 32
+      </label>
+      <input
+        type="radio"
+        bind:group={sort}
+        value="totalPoints"
+        id="sort_points" />
+      <label for="sort_points" class:active={sort === 'totalPoints'}>
+        Points
+      </label>
     </header>
     <div class="prContent">
-      {#each prs[region][bracket] as player}
+      {#each prs[region][bracket].sort(sortFn(sort, true)) as player, i}
         {#if player.name.toLowerCase().startsWith(search.toLowerCase())}
-          <div class="prRow">
-            <PlayerItem {player} />
+          <div class="prRow playerItem">
+            <PlayerItem
+              player={{ ...player, rank: sort === 'points' ? player.pr : i + 1 }} />
           </div>
         {/if}
       {/each}

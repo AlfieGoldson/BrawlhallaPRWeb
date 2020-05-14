@@ -25,9 +25,6 @@
     padding-left: 1rem;
     text-align: left;
   }
-  input[type="radio"] {
-    display: none;
-  }
   #search {
     padding: 0.5rem;
     font-size: 1rem;
@@ -51,6 +48,9 @@
   #logo {
     width: 100%;
     height: auto;
+  }
+  input[type="radio"] {
+    display: none;
   }
 </style>
 
